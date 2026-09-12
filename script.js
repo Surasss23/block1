@@ -1,12 +1,12 @@
 /* =========================================================
    BAL GANESH MITRA MANDAL
    GANESH UTSAV 2026
-   Main website JavaScript
+   FINAL CLEAN JAVASCRIPT
    ========================================================= */
 
 
 /* =========================================================
-   1. SITE CONFIGURATION
+   1. SITE CONFIG
    ========================================================= */
 
 const SITE_CONFIG = {
@@ -16,14 +16,14 @@ const SITE_CONFIG = {
   year: 2026,
 
   /*
-    Add your hero image here later:
+    Add your hero image:
 
     heroImage: "images/hero.jpg"
   */
   heroImage: "",
 
   /*
-    Add your group photo here later:
+    Add your group photo:
 
     groupPhoto: "images/group-photo.jpg"
   */
@@ -40,16 +40,15 @@ const SITE_CONFIG = {
   },
 
   /*
-    Only enter the exact time when you know it.
+    Aagman:
+    Sunday, 13 September 2026
+    Evening.
 
+    Keep time empty until exact time is confirmed.
     Example:
     time: "18:30"
-
-    If left empty, website will simply show:
-    SHAM KO • TIME TO BE ANNOUNCED
-
-    This avoids inventing an exact Aagman time.
   */
+
   agaman: {
     date: "2026-09-13",
     time: ""
@@ -268,10 +267,11 @@ const PEOPLE = [
 const AUCTION_CONFIG = {
 
   /*
-    false = Auction section stays hidden.
+    false = hidden
 
     Change to true when auction is ready.
   */
+
   enabled: false,
 
   title: "Laddu Auction",
@@ -282,7 +282,8 @@ const AUCTION_CONFIG = {
 
   endDate: "",
 
-  description: "Bappa ka prasad, yaadon ka hissa."
+  description:
+    "Bappa ka prasad, yaadon ka hissa."
 
 };
 
@@ -294,10 +295,11 @@ const AUCTION_CONFIG = {
 const DONATION_CONFIG = {
 
   /*
-    false = Donation section stays hidden.
+    false = donation section hidden.
 
-    Change to true when you are ready.
+    Change to true when ready.
   */
+
   enabled: false,
 
   /*
@@ -305,9 +307,11 @@ const DONATION_CONFIG = {
 
     upiId: "yourname@upi"
   */
+
   upiId: "",
 
-  merchantName: "Bal Ganesh Mitra Mandal",
+  merchantName:
+    "Bal Ganesh Mitra Mandal",
 
   phoneNumber: "",
 
@@ -317,15 +321,19 @@ const DONATION_CONFIG = {
 
 
 /* =========================================================
-   7. HELPERS
+   7. BASIC HELPERS
    ========================================================= */
 
-const $ = (selector, parent = document) =>
-  parent.querySelector(selector);
+const $ = (
+  selector,
+  parent = document
+) => parent.querySelector(selector);
 
 
-const $$ = (selector, parent = document) =>
-  [...parent.querySelectorAll(selector)];
+const $$ = (
+  selector,
+  parent = document
+) => [...parent.querySelectorAll(selector)];
 
 
 function esc(value = "") {
@@ -340,29 +348,111 @@ function esc(value = "") {
 }
 
 
-function placeholderHTML(label = "IMAGE") {
+function placeholderHTML(
+  label = "IMAGE"
+) {
 
   return `
     <div class="media-placeholder">
-      <span>${esc(label)}</span>
+      <span>
+        ${esc(label)}
+      </span>
     </div>
   `;
 
 }
 
 
-function mediaStyle(url) {
+function formatDate(dateString) {
 
-  if (!url) return "";
+  if (!dateString) {
+    return "";
+  }
 
-  return `background-image:url("${String(url).replaceAll('"', '\\"')}");`;
+
+  const parts =
+    dateString.split("-");
+
+
+  if (parts.length !== 3) {
+    return dateString;
+  }
+
+
+  const date =
+    new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+
+
+  return date
+    .toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short"
+      }
+    )
+    .toUpperCase();
 
 }
 
 
-function parseEventDate(date, time = "") {
+function formatFullDate(dateString) {
 
-  if (!date) return null;
+  if (!dateString) {
+    return "";
+  }
+
+
+  const parts =
+    dateString.split("-");
+
+
+  if (parts.length !== 3) {
+    return dateString;
+  }
+
+
+  const date =
+    new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
+
+
+  return date
+    .toLocaleDateString(
+      "en-IN",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    )
+    .toUpperCase();
+
+}
+
+
+function parseEventDate(
+  date,
+  time = ""
+) {
+
+  if (!date) {
+    return null;
+  }
+
+
+  /*
+    If no exact time exists,
+    use end of day for comparisons.
+  */
 
   return new Date(
     `${date}T${time || "23:59"}:00`
@@ -371,70 +461,34 @@ function parseEventDate(date, time = "") {
 }
 
 
-function formatDate(dateString) {
-
-  if (!dateString) return "";
-
-  const parts = dateString.split("-");
-
-  if (parts.length !== 3) return dateString;
-
-  const date = new Date(
-    Number(parts[0]),
-    Number(parts[1]) - 1,
-    Number(parts[2])
-  );
-
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short"
-  }).toUpperCase();
-
-}
-
-
-function formatFullDate(dateString) {
-
-  if (!dateString) return "";
-
-  const parts = dateString.split("-");
-
-  if (parts.length !== 3) return dateString;
-
-  const date = new Date(
-    Number(parts[0]),
-    Number(parts[1]) - 1,
-    Number(parts[2])
-  );
-
-  return date.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  }).toUpperCase();
-
-}
-
-
 function safeExternal(url) {
 
-  if (!url) return "#";
+  if (!url) {
+    return "#";
+  }
+
 
   try {
 
-    const parsed = new URL(url);
+    const parsed =
+      new URL(url);
+
 
     if (
       parsed.protocol === "https:" ||
       parsed.protocol === "http:"
     ) {
+
       return parsed.href;
+
     }
 
   } catch (error) {
+
     return "#";
+
   }
+
 
   return "#";
 
@@ -447,51 +501,79 @@ function safeExternal(url) {
 
 function getStatus(event) {
 
-  const now = new Date();
+  const now =
+    new Date();
 
-  const start = parseEventDate(
-    event.date,
-    event.time
+
+  const eventDate =
+    new Date(
+      `${event.date}T00:00:00`
+    );
+
+
+  const today =
+    new Date();
+
+
+  eventDate.setHours(
+    0,
+    0,
+    0,
+    0
   );
 
-  if (!start) return "";
 
-  /*
-    A simple status system.
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
 
-    Before event:
-    UP NEXT
 
-    Same day / event passed:
-    COMPLETED
-  */
+  if (
+    eventDate.getTime() >
+    today.getTime()
+  ) {
 
-  const eventDate = new Date(`${event.date}T00:00:00`);
-  const today = new Date();
-
-  eventDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  if (eventDate.getTime() > today.getTime()) {
     return "UP NEXT";
+
   }
 
-  if (eventDate.getTime() < today.getTime()) {
+
+  if (
+    eventDate.getTime() <
+    today.getTime()
+  ) {
+
     return "COMPLETED";
+
   }
 
-  /*
-    If today but exact time isn't known,
-    keep it as TODAY.
-  */
 
   if (!event.time) {
+
     return "TODAY";
+
   }
 
-  if (now < start) {
+
+  const exactTime =
+    parseEventDate(
+      event.date,
+      event.time
+    );
+
+
+  if (
+    exactTime &&
+    now < exactTime
+  ) {
+
     return "UP NEXT";
+
   }
+
 
   return "TODAY";
 
@@ -499,7 +581,7 @@ function getStatus(event) {
 
 
 /* =========================================================
-   9. SETUP SITE CONFIG
+   9. SITE CONFIGURATION
    ========================================================= */
 
 function setupConfig() {
@@ -508,12 +590,13 @@ function setupConfig() {
     `${SITE_CONFIG.mandalName} | Ganesh Utsav ${SITE_CONFIG.year}`;
 
 
-  const metaDescription =
+  const description =
     $('meta[name="description"]');
 
-  if (metaDescription) {
 
-    metaDescription.setAttribute(
+  if (description) {
+
+    description.setAttribute(
       "content",
       `${SITE_CONFIG.mandalName} — Ganesh Utsav ${SITE_CONFIG.year}. Ek nayi shuruaat, Bappa ke saath.`
     );
@@ -521,66 +604,104 @@ function setupConfig() {
   }
 
 
-  const hero = $("#heroImage");
+  /* HERO IMAGE */
 
-  if (hero) {
-
-    if (SITE_CONFIG.heroImage) {
-
-      hero.style.backgroundImage =
-        `url("${SITE_CONFIG.heroImage}")`;
-
-      hero.classList.remove("media-placeholder");
-
-      hero.innerHTML = "";
-
-    }
-
-  }
+  const hero =
+    $("#heroImage");
 
 
-  const groupPhoto = $("#groupPhoto");
+  if (
+    hero &&
+    SITE_CONFIG.heroImage
+  ) {
 
-  if (groupPhoto) {
+    hero.style.backgroundImage =
+      `url("${SITE_CONFIG.heroImage}")`;
 
-    if (SITE_CONFIG.groupPhoto) {
+    hero.style.backgroundSize =
+      "cover";
 
-      groupPhoto.style.backgroundImage =
-        `url("${SITE_CONFIG.groupPhoto}")`;
+    hero.style.backgroundPosition =
+      "center";
 
-      groupPhoto.classList.remove("media-placeholder");
+    hero.classList.remove(
+      "media-placeholder"
+    );
 
-      groupPhoto.innerHTML = "";
-
-    }
+    hero.innerHTML = "";
 
   }
 
 
-  const locationName = $("#locationName");
+  /* GROUP PHOTO */
+
+  const groupPhoto =
+    $("#groupPhoto");
+
+
+  if (
+    groupPhoto &&
+    SITE_CONFIG.groupPhoto
+  ) {
+
+    groupPhoto.style.backgroundImage =
+      `url("${SITE_CONFIG.groupPhoto}")`;
+
+    groupPhoto.style.backgroundSize =
+      "cover";
+
+    groupPhoto.style.backgroundPosition =
+      "center";
+
+    groupPhoto.classList.remove(
+      "media-placeholder"
+    );
+
+    groupPhoto.innerHTML = "";
+
+  }
+
+
+  /* LOCATION */
+
+  const locationName =
+    $("#locationName");
+
 
   if (locationName) {
+
     locationName.textContent =
       SITE_CONFIG.location.name;
+
   }
 
 
-  const locationAddress = $("#locationAddress");
+  const locationAddress =
+    $("#locationAddress");
+
 
   if (locationAddress) {
+
     locationAddress.textContent =
       SITE_CONFIG.location.address;
+
   }
 
 
-  const directions = $("#directionsLink");
+  const directions =
+    $("#directionsLink");
+
 
   if (directions) {
 
-    if (SITE_CONFIG.location.mapsUrl) {
+    if (
+      SITE_CONFIG.location.mapsUrl
+    ) {
 
       directions.href =
-        safeExternal(SITE_CONFIG.location.mapsUrl);
+        safeExternal(
+          SITE_CONFIG.location.mapsUrl
+        );
 
     } else {
 
@@ -591,62 +712,80 @@ function setupConfig() {
         "true"
       );
 
-      directions.addEventListener("click", e => {
-        e.preventDefault();
-      });
+
+      directions.addEventListener(
+        "click",
+        event => {
+          event.preventDefault();
+        }
+      );
 
     }
 
   }
 
 
-  const instagram = $("#instagramLink");
+  /* INSTAGRAM */
+
+  const instagram =
+    $("#instagramLink");
+
 
   if (instagram) {
 
-    if (SITE_CONFIG.social.instagram) {
+    if (
+      SITE_CONFIG.social.instagram
+    ) {
 
       instagram.href =
-        safeExternal(SITE_CONFIG.social.instagram);
+        safeExternal(
+          SITE_CONFIG.social.instagram
+        );
 
     } else {
 
       instagram.href = "#";
 
-      instagram.addEventListener("click", e => {
-        e.preventDefault();
-      });
+      instagram.addEventListener(
+        "click",
+        event => {
+          event.preventDefault();
+        }
+      );
 
     }
 
   }
 
 
-  const momentDate = $("#momentDate");
+  /* AAGMAN DATE */
+
+  const momentDate =
+    $("#momentDate");
+
 
   if (momentDate) {
 
     momentDate.textContent =
-      formatFullDate(SITE_CONFIG.agaman.date);
+      formatFullDate(
+        SITE_CONFIG.agaman.date
+      );
 
   }
 
 
-  const momentTime = $("#momentTime");
+  /* AAGMAN TIME */
+
+  const momentTime =
+    $("#momentTime");
+
 
   if (momentTime) {
 
-    if (SITE_CONFIG.agaman.time) {
-
-      momentTime.textContent =
-        SITE_CONFIG.agaman.time;
-
-    } else {
-
-      momentTime.textContent =
-        "SHAM KO • TIME TO BE ANNOUNCED";
-
-    }
+    momentTime.textContent =
+      SITE_CONFIG.agaman.time
+        ? SITE_CONFIG.agaman.time
+        : "SHAM KO • TIME TO BE ANNOUNCED";
 
   }
 
@@ -654,135 +793,214 @@ function setupConfig() {
 
 
 /* =========================================================
-   10. RENDER DAILY SCHEDULE
+   10. DAILY SCHEDULE RENDER
    ========================================================= */
 
 function renderDaily() {
 
-  const root = $("#dailySchedule");
+  const root =
+    $("#dailySchedule");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
+
 
   const events =
-    DAILY_SCHEDULE.filter(event => event.visible !== false);
+    DAILY_SCHEDULE.filter(
+      event =>
+        event.visible !== false
+    );
+
 
   if (!events.length) {
 
     root.innerHTML = `
-      <div class="empty-state">
+      <div class="memory-empty">
         Schedule will be added soon.
       </div>
     `;
 
     return;
+
   }
 
 
-  root.innerHTML = events.map(event => {
+  root.innerHTML =
+    events.map(
+      event => {
 
-    const status =
-      getStatus(event);
-
-    const image = event.image
-      ? `
-        <div
-          class="timeline-media"
-          style="background-image:url('${esc(event.image)}');background-size:cover;background-position:center;"
-        ></div>
-      `
-      : placeholderHTML("BAPPA");
+        const status =
+          getStatus(event);
 
 
-    return `
-      <article
-        class="timeline-item reveal ${status === "UP NEXT" ? "up-next" : ""}"
-      >
-
-        <div class="timeline-date">
-
-          <strong>
-            ${esc(event.day)}
-          </strong>
-
-          <br>
-
-          <span>
-            ${esc(formatDate(event.date))}
-          </span>
-
-        </div>
+        let media;
 
 
-        <div class="timeline-main">
+        if (event.image) {
 
-          <div class="timeline-copy">
+          media = `
+            <div
+              class="timeline-media"
+              style="
+                background-image:url('${esc(event.image)}');
+                background-size:cover;
+                background-position:center;
+              "
+            ></div>
+          `;
 
-            <div class="timeline-time">
-              ${esc(event.time || "TIME TO BE ANNOUNCED")}
+        } else {
+
+          media =
+            placeholderHTML(
+              "BAPPA"
+            );
+
+        }
+
+
+        return `
+          <article
+            class="timeline-item reveal ${
+              status === "UP NEXT"
+                ? "up-next"
+                : ""
+            }"
+          >
+
+
+            <div class="timeline-date">
+
+              <strong>
+                ${esc(event.day)}
+              </strong>
+
+              <br>
+
+              <span>
+                ${esc(
+                  formatDate(event.date)
+                )}
+              </span>
+
             </div>
 
-            <h3>
-              ${esc(event.title)}
-            </h3>
-
-            <p>
-              ${esc(event.description)}
-            </p>
-
-            ${
-              status
-              ? `
-                <span class="timeline-status">
-                  ${esc(status)}
-                </span>
-              `
-              : ""
-            }
-
-          </div>
 
 
-          ${image}
+            <div class="timeline-main">
 
-        </div>
 
-      </article>
-    `;
+              <div class="timeline-copy">
 
-  }).join("");
+
+                <div class="timeline-time">
+                  ${esc(
+                    event.time ||
+                    "TIME TO BE ANNOUNCED"
+                  )}
+                </div>
+
+
+                <h3>
+                  ${esc(event.title)}
+                </h3>
+
+
+                <p>
+                  ${esc(
+                    event.description
+                  )}
+                </p>
+
+
+                ${
+                  status
+                    ? `
+                      <span class="timeline-status">
+                        ${esc(status)}
+                      </span>
+                    `
+                    : ""
+                }
+
+
+              </div>
+
+
+              ${media}
+
+
+            </div>
+
+
+          </article>
+        `;
+
+      }
+    ).join("");
+
+
+  observeReveals();
 
 }
 
 
 /* =========================================================
-   11. UP NEXT
+   11. FIND NEXT EVENT
    ========================================================= */
 
 function renderUpNext() {
 
-  const events =
+  const items =
     DAILY_SCHEDULE.filter(
-      event => event.visible !== false
+      event =>
+        event.visible !== false
     );
 
-  if (!events.length) return;
 
-  const now = new Date();
+  if (!items.length) {
+    return;
+  }
 
-  let nextEvent = null;
 
-  for (const event of events) {
+  const now =
+    new Date();
 
-    const date = parseEventDate(
-      event.date,
-      event.time
-    );
 
-    if (!date) continue;
+  let nextIndex =
+    -1;
 
-    if (date > now) {
 
-      nextEvent = event;
+  for (
+    let i = 0;
+    i < items.length;
+    i++
+  ) {
+
+    const event =
+      items[i];
+
+
+    /*
+      For events without exact time,
+      consider the whole date as upcoming
+      until the date has passed.
+    */
+
+    const eventDate =
+      new Date(
+        `${event.date}T00:00:00`
+      );
+
+
+    if (
+      eventDate >= now
+    ) {
+
+      nextIndex = i;
+
       break;
 
     }
@@ -790,18 +1008,24 @@ function renderUpNext() {
   }
 
 
-  if (!nextEvent) return;
+  if (nextIndex === -1) {
+    return;
+  }
 
 
-  const items =
+  const timelineItems =
     $$(".timeline-item");
 
-  const index =
-    events.indexOf(nextEvent);
 
-  if (items[index]) {
+  if (
+    timelineItems[nextIndex]
+  ) {
 
-    items[index].classList.add("up-next");
+    timelineItems[
+      nextIndex
+    ].classList.add(
+      "up-next"
+    );
 
   }
 
@@ -809,41 +1033,66 @@ function renderUpNext() {
 
 
 /* =========================================================
-   12. MEMORIES
+   12. MEMORIES RENDER
    ========================================================= */
 
-let activeMemoryFilter = "all";
+let activeMemoryFilter =
+  "all";
 
 
-function renderMemories(filter = activeMemoryFilter) {
+function renderMemories(
+  filter = activeMemoryFilter
+) {
 
-  const root = $("#memoryGrid");
+  const root =
+    $("#memoryGrid");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
 
 
   const memories =
     MEMORIES.filter(
-      memory => memory.visible !== false
+      memory =>
+        memory.visible !== false
     );
 
 
-  const filtered =
-    filter === "all"
-      ? memories
-      : memories.filter(memory => {
+  let filtered;
 
-          if (filter === "photo") {
-            return memory.type === "photo";
-          }
 
-          if (filter === "video") {
-            return memory.type === "video";
-          }
+  if (filter === "all") {
 
-          return memory.category === filter;
+    filtered =
+      memories;
 
-        });
+  } else if (filter === "photo") {
+
+    filtered =
+      memories.filter(
+        memory =>
+          memory.type === "photo"
+      );
+
+  } else if (filter === "video") {
+
+    filtered =
+      memories.filter(
+        memory =>
+          memory.type === "video"
+      );
+
+  } else {
+
+    filtered =
+      memories.filter(
+        memory =>
+          memory.category === filter
+      );
+
+  }
 
 
   if (!filtered.length) {
@@ -855,122 +1104,169 @@ function renderMemories(filter = activeMemoryFilter) {
     `;
 
     return;
+
   }
 
 
   root.innerHTML =
-    filtered.map((memory, index) => {
+    filtered.map(
+      memory => {
 
-      const originalIndex =
-        MEMORIES.indexOf(memory);
+        const index =
+          MEMORIES.indexOf(
+            memory
+          );
 
 
-      let media = "";
+        let media = "";
 
 
-      if (
-        memory.media &&
-        memory.type === "video"
-      ) {
+        /*
+          VIDEO
+        */
 
-        media = `
-          <video
-            src="${esc(memory.media)}"
-            muted
-            playsinline
-            preload="metadata"
-          ></video>
-        `;
+        if (
+          memory.media &&
+          memory.type === "video"
+        ) {
 
-      } else if (
-        memory.media &&
-        memory.type === "photo"
-      ) {
+          media = `
+            <video
+              src="${esc(memory.media)}"
+              muted
+              playsinline
+              preload="metadata"
+            ></video>
+          `;
 
-        media = `
-          <img
-            src="${esc(memory.media)}"
-            alt="${esc(memory.title)}"
-            loading="lazy"
+        }
+
+
+        /*
+          PHOTO
+        */
+
+        else if (
+          memory.media &&
+          memory.type === "photo"
+        ) {
+
+          media = `
+            <img
+              src="${esc(memory.media)}"
+              alt="${esc(memory.title)}"
+              loading="lazy"
+            >
+          `;
+
+        }
+
+
+        /*
+          PLACEHOLDER
+        */
+
+        else {
+
+          media = `
+            <div class="memory-placeholder-text">
+              ${
+                memory.type === "video"
+                  ? "REEL PLACEHOLDER"
+                  : "PHOTO PLACEHOLDER"
+              }
+            </div>
+          `;
+
+        }
+
+
+        return `
+          <article
+            class="memory-card reveal"
+            data-memory-index="${index}"
+            tabindex="0"
+            role="button"
+            aria-label="Open ${esc(memory.title)}"
           >
-        `;
-
-      } else {
-
-        media = `
-          <div class="memory-placeholder-text">
-            ${esc(
-              memory.type === "video"
-                ? "REEL PLACEHOLDER"
-                : "PHOTO PLACEHOLDER"
-            )}
-          </div>
-        `;
-
-      }
 
 
-      return `
-        <article
-          class="memory-card reveal"
-          data-memory-index="${originalIndex}"
-          tabindex="0"
-          role="button"
-          aria-label="Open ${esc(memory.title)}"
-        >
+            <div class="memory-card-media">
 
-          <div class="memory-card-media">
+              ${media}
 
-            ${media}
 
-            <div class="memory-card-overlay">
+              <div class="memory-card-overlay">
 
-              <div class="memory-card-title">
-                ${esc(memory.title)}
+
+                <div class="memory-card-title">
+                  ${esc(memory.title)}
+                </div>
+
+
+                <div class="memory-card-meta">
+                  ${esc(
+                    formatDate(
+                      memory.date
+                    )
+                  )}
+                </div>
+
+
               </div>
 
-              <div class="memory-card-meta">
-                ${esc(formatDate(memory.date))}
-              </div>
 
             </div>
 
-          </div>
 
-        </article>
-      `;
+          </article>
+        `;
 
-    }).join("");
+      }
+    ).join("");
 
 
   $$(".memory-card", root)
     .forEach(card => {
 
-      card.addEventListener("click", () => {
 
-        openMemory(
-          Number(card.dataset.memoryIndex)
-        );
-
-      });
-
-
-      card.addEventListener("keydown", event => {
-
-        if (
-          event.key === "Enter" ||
-          event.key === " "
-        ) {
-
-          event.preventDefault();
+      card.addEventListener(
+        "click",
+        () => {
 
           openMemory(
-            Number(card.dataset.memoryIndex)
+            Number(
+              card.dataset.memoryIndex
+            )
           );
 
         }
+      );
 
-      });
+
+      card.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+
+            openMemory(
+              Number(
+                card.dataset.memoryIndex
+              )
+            );
+
+          }
+
+        }
+      );
+
 
     });
 
@@ -989,35 +1285,52 @@ function setupMemoryFilters() {
   const root =
     $("#memoryFilters");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
 
 
-  root.addEventListener("click", event => {
+  root.addEventListener(
+    "click",
+    event => {
 
-    const button =
-      event.target.closest(".filter-btn");
+      const button =
+        event.target.closest(
+          ".filter-btn"
+        );
 
-    if (!button) return;
+
+      if (!button) {
+        return;
+      }
 
 
-    $$(".filter-btn", root)
-      .forEach(btn =>
-        btn.classList.remove("active")
+      $$(".filter-btn", root)
+        .forEach(
+          btn =>
+            btn.classList.remove(
+              "active"
+            )
+        );
+
+
+      button.classList.add(
+        "active"
       );
 
 
-    button.classList.add("active");
+      activeMemoryFilter =
+        button.dataset.filter ||
+        "all";
 
 
-    activeMemoryFilter =
-      button.dataset.filter || "all";
+      renderMemories(
+        activeMemoryFilter
+      );
 
-
-    renderMemories(
-      activeMemoryFilter
-    );
-
-  });
+    }
+  );
 
 }
 
@@ -1031,12 +1344,16 @@ function renderPeople() {
   const root =
     $("#peopleGrid");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
 
 
   const people =
     PEOPLE.filter(
-      person => person.visible !== false
+      person =>
+        person.visible !== false
     );
 
 
@@ -1049,48 +1366,57 @@ function renderPeople() {
     `;
 
     return;
+
   }
 
 
   root.innerHTML =
-    people.map(person => {
+    people.map(
+      person => {
 
-      const image =
-        person.image
-          ? `
-            <div
-              class="person-image"
-              style="background-image:url('${esc(person.image)}');background-size:cover;background-position:center;"
-            ></div>
-          `
-          : `
-            <div class="person-image media-placeholder">
-              <span>PHOTO</span>
+        const image =
+          person.image
+            ? `
+              <div
+                class="person-image"
+                style="
+                  background-image:url('${esc(person.image)}');
+                  background-size:cover;
+                  background-position:center;
+                "
+              ></div>
+            `
+            : `
+              <div class="person-image media-placeholder">
+                <span>
+                  PHOTO
+                </span>
+              </div>
+            `;
+
+
+        return `
+          <article class="person-card reveal">
+
+            ${image}
+
+            <div class="person-info">
+
+              <div class="person-name">
+                ${esc(person.name)}
+              </div>
+
+              <div class="person-role">
+                ${esc(person.role)}
+              </div>
+
             </div>
-          `;
 
+          </article>
+        `;
 
-      return `
-        <article class="person-card reveal">
-
-          ${image}
-
-          <div class="person-info">
-
-            <div class="person-name">
-              ${esc(person.name)}
-            </div>
-
-            <div class="person-role">
-              ${esc(person.role)}
-            </div>
-
-          </div>
-
-        </article>
-      `;
-
-    }).join("");
+      }
+    ).join("");
 
 
   observeReveals();
@@ -1107,12 +1433,16 @@ function renderEvents() {
   const root =
     $("#eventsList");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
 
 
   const events =
     DAILY_SCHEDULE.filter(
-      event => event.visible !== false
+      event =>
+        event.visible !== false
     );
 
 
@@ -1125,47 +1455,66 @@ function renderEvents() {
     `;
 
     return;
+
   }
 
 
   root.innerHTML =
-    events.map(event => {
+    events.map(
+      event => {
 
-      return `
-        <article class="event-row reveal">
-
-          <div class="event-row-date">
-
-            ${esc(event.day)}
-
-            <br>
-
-            ${esc(formatDate(event.date))}
-
-          </div>
+        return `
+          <article class="event-row reveal">
 
 
-          <div>
+            <div class="event-row-date">
 
-            <div class="event-row-title">
-              ${esc(event.title)}
+              ${esc(event.day)}
+
+              <br>
+
+              ${esc(
+                formatDate(
+                  event.date
+                )
+              )}
+
             </div>
 
-            <div class="event-row-desc">
-              ${esc(event.description)}
+
+
+            <div>
+
+
+              <div class="event-row-title">
+                ${esc(event.title)}
+              </div>
+
+
+              <div class="event-row-desc">
+                ${esc(
+                  event.description
+                )}
+              </div>
+
+
             </div>
 
-          </div>
 
 
-          <div class="event-row-time">
-            ${esc(event.time || "TIME TBA")}
-          </div>
+            <div class="event-row-time">
+              ${esc(
+                event.time ||
+                "TIME TBA"
+              )}
+            </div>
 
-        </article>
-      `;
 
-    }).join("");
+          </article>
+        `;
+
+      }
+    ).join("");
 
 
   observeReveals();
@@ -1174,7 +1523,7 @@ function renderEvents() {
 
 
 /* =========================================================
-   16. COUNTDOWN
+   16. AAGMAN COUNTDOWN
    ========================================================= */
 
 function setupCountdown() {
@@ -1189,24 +1538,26 @@ function setupCountdown() {
   const countdown =
     $(".countdown");
 
-  const timeEl =
+
+  const timeElement =
     $("#momentTime");
 
 
-  if (!date) return;
+  if (!date) {
+    return;
+  }
 
 
   /*
-    Important:
-    If exact time isn't configured,
-    we don't create a fake countdown.
+    No exact time:
+    Don't invent one.
   */
 
   if (!time) {
 
-    if (timeEl) {
+    if (timeElement) {
 
-      timeEl.textContent =
+      timeElement.textContent =
         "SHAM KO • TIME TO BE ANNOUNCED";
 
     }
@@ -1227,108 +1578,146 @@ function setupCountdown() {
 
     }
 
+
     return;
 
   }
 
 
   const target =
-    new Date(`${date}T${time}:00`);
+    new Date(
+      `${date}T${time}:00`
+    );
 
 
-  const tick = () => {
+  const tick =
+    () => {
 
-    const diff =
-      target - new Date();
+      const difference =
+        target - new Date();
 
 
-    if (diff <= 0) {
+      if (
+        difference <= 0
+      ) {
 
-      if (countdown) {
+        if (countdown) {
 
-        countdown.innerHTML = `
-          <div class="countdown-message">
-            BAPPA HAS ARRIVED 🙏
-          </div>
-        `;
+          countdown.innerHTML = `
+            <div class="countdown-message">
+              BAPPA HAS ARRIVED 🙏
+            </div>
+          `;
+
+        }
+
+
+        return;
 
       }
 
-      return;
 
-    }
-
-
-    let remaining = diff;
+      let remaining =
+        difference;
 
 
-    const days =
-      Math.floor(
-        remaining / 86400000
-      );
-
-    remaining %= 86400000;
+      const days =
+        Math.floor(
+          remaining / 86400000
+        );
 
 
-    const hours =
-      Math.floor(
-        remaining / 3600000
-      );
-
-    remaining %= 3600000;
+      remaining %= 86400000;
 
 
-    const minutes =
-      Math.floor(
-        remaining / 60000
-      );
-
-    remaining %= 60000;
+      const hours =
+        Math.floor(
+          remaining / 3600000
+        );
 
 
-    const seconds =
-      Math.floor(
-        remaining / 1000
-      );
+      remaining %= 3600000;
 
 
-    const dayEl =
-      $("#countDays");
-
-    const hourEl =
-      $("#countHours");
-
-    const minuteEl =
-      $("#countMinutes");
-
-    const secondEl =
-      $("#countSeconds");
+      const minutes =
+        Math.floor(
+          remaining / 60000
+        );
 
 
-    if (dayEl) {
-      dayEl.textContent =
-        String(days).padStart(2, "0");
-    }
+      remaining %= 60000;
 
-    if (hourEl) {
-      hourEl.textContent =
-        String(hours).padStart(2, "0");
-    }
 
-    if (minuteEl) {
-      minuteEl.textContent =
-        String(minutes).padStart(2, "0");
-    }
+      const seconds =
+        Math.floor(
+          remaining / 1000
+        );
 
-    if (secondEl) {
-      secondEl.textContent =
-        String(seconds).padStart(2, "0");
-    }
 
-  };
+      const daysElement =
+        $("#countDays");
+
+
+      const hoursElement =
+        $("#countHours");
+
+
+      const minutesElement =
+        $("#countMinutes");
+
+
+      const secondsElement =
+        $("#countSeconds");
+
+
+      if (daysElement) {
+
+        daysElement.textContent =
+          String(days).padStart(
+            2,
+            "0"
+          );
+
+      }
+
+
+      if (hoursElement) {
+
+        hoursElement.textContent =
+          String(hours).padStart(
+            2,
+            "0"
+          );
+
+      }
+
+
+      if (minutesElement) {
+
+        minutesElement.textContent =
+          String(minutes).padStart(
+            2,
+            "0"
+          );
+
+      }
+
+
+      if (secondsElement) {
+
+        secondsElement.textContent =
+          String(seconds).padStart(
+            2,
+            "0"
+          );
+
+      }
+
+    };
 
 
   tick();
+
 
   setInterval(
     tick,
@@ -1339,86 +1728,26 @@ function setupCountdown() {
 
 
 /* =========================================================
-   17. NAVIGATION / HAMBURGER MENU
+   17. HEADER SCROLL EFFECT
+   =========================================================
+   
+   IMPORTANT:
+   There is NO hamburger menu here.
+   Only the navbar scroll effect remains.
    ========================================================= */
 
-function setupNav() {
+function setupHeader() {
 
   const header =
     $("#siteHeader");
 
-  const toggle =
-    $("#menuToggle");
 
-  const menu =
-    $("#siteMenu");
-
-  const close =
-    $("#menuClose");
-
-  const backdrop =
-    $("#menuBackdrop");
+  if (!header) {
+    return;
+  }
 
 
-  if (
-    !header ||
-    !toggle ||
-    !menu
-  ) return;
-
-
-  const setMenu =
-    open => {
-
-      menu.classList.toggle(
-        "open",
-        open
-      );
-
-
-      if (backdrop) {
-
-        backdrop.classList.toggle(
-          "open",
-          open
-        );
-
-      }
-
-
-      document.body.classList.toggle(
-        "menu-open",
-        open
-      );
-
-
-      toggle.setAttribute(
-        "aria-expanded",
-        String(open)
-      );
-
-
-      toggle.setAttribute(
-        "aria-label",
-        open
-          ? "Close navigation menu"
-          : "Open navigation menu"
-      );
-
-
-      menu.setAttribute(
-        "aria-hidden",
-        String(!open)
-      );
-
-    };
-
-
-  /*
-    Header shadow when scrolling.
-  */
-
-  const updateHeader =
+  const update =
     () => {
 
       header.classList.toggle(
@@ -1431,125 +1760,14 @@ function setupNav() {
 
   window.addEventListener(
     "scroll",
-    updateHeader,
-    { passive: true }
-  );
-
-
-  updateHeader();
-
-
-  /*
-    Hamburger open.
-  */
-
-  toggle.addEventListener(
-    "click",
-    () => {
-
-      const open =
-        !menu.classList.contains("open");
-
-      setMenu(open);
-
+    update,
+    {
+      passive: true
     }
   );
 
 
-  /*
-    X close.
-  */
-
-  if (close) {
-
-    close.addEventListener(
-      "click",
-      () => setMenu(false)
-    );
-
-  }
-
-
-  /*
-    Click dark overlay to close.
-  */
-
-  if (backdrop) {
-
-    backdrop.addEventListener(
-      "click",
-      () => setMenu(false)
-    );
-
-  }
-
-
-  /*
-    Clicking any navigation item
-    automatically closes the menu.
-  */
-
-  menu.addEventListener(
-    "click",
-    event => {
-
-      const link =
-        event.target.closest("a");
-
-      if (!link) return;
-
-      setMenu(false);
-
-    }
-  );
-
-
-  /*
-    Escape key.
-  */
-
-  document.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key === "Escape" &&
-        menu.classList.contains("open")
-      ) {
-
-        setMenu(false);
-
-        toggle.focus();
-
-      }
-
-    }
-  );
-
-
-  /*
-    When screen becomes desktop,
-    close mobile drawer.
-  */
-
-  window.addEventListener(
-    "resize",
-    () => {
-
-      if (
-        window.innerWidth > 800 &&
-        menu.classList.contains("open")
-      ) {
-
-        setMenu(false);
-
-      }
-
-    }
-  );
-
-
-  setMenu(false);
+  update();
 
 }
 
@@ -1558,7 +1776,8 @@ function setupNav() {
    18. SCROLL REVEAL
    ========================================================= */
 
-let revealObserver = null;
+let revealObserver =
+  null;
 
 
 function observeReveals() {
@@ -1567,20 +1786,27 @@ function observeReveals() {
     $$(".reveal");
 
 
-  if (!elements.length) return;
+  if (!elements.length) {
+    return;
+  }
 
 
   /*
-    If browser doesn't support
-    IntersectionObserver, simply
-    show everything.
+    Fallback for old browsers.
   */
 
-  if (!("IntersectionObserver" in window)) {
+  if (
+    !(
+      "IntersectionObserver"
+      in window
+    )
+  ) {
 
     elements.forEach(
       element =>
-        element.classList.add("visible")
+        element.classList.add(
+          "visible"
+        )
     );
 
     return;
@@ -1594,19 +1820,29 @@ function observeReveals() {
       new IntersectionObserver(
         entries => {
 
-          entries.forEach(entry => {
+          entries.forEach(
+            entry => {
 
-            if (!entry.isIntersecting) return;
+              if (
+                !entry.isIntersecting
+              ) {
 
-            entry.target.classList.add(
-              "visible"
-            );
+                return;
 
-            revealObserver.unobserve(
-              entry.target
-            );
+              }
 
-          });
+
+              entry.target.classList.add(
+                "visible"
+              );
+
+
+              revealObserver.unobserve(
+                entry.target
+              );
+
+            }
+          );
 
         },
         {
@@ -1617,19 +1853,23 @@ function observeReveals() {
   }
 
 
-  elements.forEach(element => {
+  elements.forEach(
+    element => {
 
-    if (
-      !element.classList.contains("visible")
-    ) {
+      if (
+        !element.classList.contains(
+          "visible"
+        )
+      ) {
 
-      revealObserver.observe(
-        element
-      );
+        revealObserver.observe(
+          element
+        );
+
+      }
 
     }
-
-  });
+  );
 
 }
 
@@ -1638,7 +1878,8 @@ function observeReveals() {
    19. LIGHTBOX
    ========================================================= */
 
-let currentMemoryIndex = 0;
+let currentMemoryIndex =
+  0;
 
 
 function openMemory(index) {
@@ -1646,20 +1887,28 @@ function openMemory(index) {
   if (
     index < 0 ||
     index >= MEMORIES.length
-  ) return;
+  ) {
+
+    return;
+
+  }
 
 
-  currentMemoryIndex = index;
+  currentMemoryIndex =
+    index;
 
 
   const lightbox =
     $("#memoryLightbox");
 
+
   const media =
     $("#lightboxMedia");
 
+
   const title =
     $("#lightboxTitle");
+
 
   const text =
     $("#lightboxText");
@@ -1668,7 +1917,11 @@ function openMemory(index) {
   if (
     !lightbox ||
     !media
-  ) return;
+  ) {
+
+    return;
+
+  }
 
 
   const memory =
@@ -1678,29 +1931,53 @@ function openMemory(index) {
   media.innerHTML = "";
 
 
+  /*
+    VIDEO
+  */
+
   if (
     memory.media &&
     memory.type === "video"
   ) {
 
     const video =
-      document.createElement("video");
+      document.createElement(
+        "video"
+      );
+
 
     video.src =
       memory.media;
 
-    video.controls = true;
-    video.playsInline = true;
-    video.preload = "metadata";
+
+    video.controls =
+      true;
+
+
+    video.playsInline =
+      true;
+
+
+    video.preload =
+      "metadata";
+
 
     /*
       No autoplay.
-      This prevents unexpected sound.
+      User must press play.
     */
 
-    media.appendChild(video);
+
+    media.appendChild(
+      video
+    );
 
   }
+
+
+  /*
+    PHOTO
+  */
 
   else if (
     memory.media &&
@@ -1708,17 +1985,30 @@ function openMemory(index) {
   ) {
 
     const image =
-      document.createElement("img");
+      document.createElement(
+        "img"
+      );
+
 
     image.src =
       memory.media;
 
-    image.alt =
-      memory.title || "Memory";
 
-    media.appendChild(image);
+    image.alt =
+      memory.title ||
+      "Memory";
+
+
+    media.appendChild(
+      image
+    );
 
   }
+
+
+  /*
+    PLACEHOLDER
+  */
 
   else {
 
@@ -1748,12 +2038,15 @@ function openMemory(index) {
   }
 
 
-  lightbox.hidden = false;
+  lightbox.hidden =
+    false;
+
 
   lightbox.setAttribute(
     "aria-hidden",
     "false"
   );
+
 
   document.body.classList.add(
     "menu-open"
@@ -1767,18 +2060,27 @@ function closeMemory() {
   const lightbox =
     $("#memoryLightbox");
 
-  if (!lightbox) return;
+
+  if (!lightbox) {
+    return;
+  }
 
 
   const media =
     $("#lightboxMedia");
 
+
   if (media) {
-    media.innerHTML = "";
+
+    media.innerHTML =
+      "";
+
   }
 
 
-  lightbox.hidden = true;
+  lightbox.hidden =
+    true;
+
 
   lightbox.setAttribute(
     "aria-hidden",
@@ -1793,26 +2095,41 @@ function closeMemory() {
 }
 
 
-function stepMemory(direction) {
+function stepMemory(
+  direction
+) {
 
-  if (!MEMORIES.length) return;
-
-
-  let next =
-    currentMemoryIndex + direction;
-
-
-  if (next < 0) {
-    next = MEMORIES.length - 1;
+  if (!MEMORIES.length) {
+    return;
   }
 
 
-  if (next >= MEMORIES.length) {
-    next = 0;
+  let nextIndex =
+    currentMemoryIndex +
+    direction;
+
+
+  if (nextIndex < 0) {
+
+    nextIndex =
+      MEMORIES.length - 1;
+
   }
 
 
-  openMemory(next);
+  if (
+    nextIndex >=
+    MEMORIES.length
+  ) {
+
+    nextIndex = 0;
+
+  }
+
+
+  openMemory(
+    nextIndex
+  );
 
 }
 
@@ -1822,14 +2139,19 @@ function setupLightbox() {
   const lightbox =
     $("#memoryLightbox");
 
-  if (!lightbox) return;
+
+  if (!lightbox) {
+    return;
+  }
 
 
   const closeButton =
     $("#lightboxClose");
 
-  const prev =
+
+  const previous =
     $("#lightboxPrev");
+
 
   const next =
     $("#lightboxNext");
@@ -1841,24 +2163,31 @@ function setupLightbox() {
   );
 
 
-  prev?.addEventListener(
+  previous?.addEventListener(
     "click",
-    () => stepMemory(-1)
+    () =>
+      stepMemory(-1)
   );
 
 
   next?.addEventListener(
     "click",
-    () => stepMemory(1)
+    () =>
+      stepMemory(1)
   );
 
+
+  /*
+    Clicking outside the image closes it.
+  */
 
   lightbox.addEventListener(
     "click",
     event => {
 
       if (
-        event.target === lightbox
+        event.target ===
+        lightbox
       ) {
 
         closeMemory();
@@ -1869,28 +2198,44 @@ function setupLightbox() {
   );
 
 
+  /*
+    Keyboard controls.
+  */
+
   document.addEventListener(
     "keydown",
     event => {
 
-      if (lightbox.hidden) return;
+      if (
+        lightbox.hidden
+      ) {
+
+        return;
+
+      }
 
 
-      if (event.key === "Escape") {
+      if (
+        event.key === "Escape"
+      ) {
 
         closeMemory();
 
       }
 
 
-      if (event.key === "ArrowLeft") {
+      if (
+        event.key === "ArrowLeft"
+      ) {
 
         stepMemory(-1);
 
       }
 
 
-      if (event.key === "ArrowRight") {
+      if (
+        event.key === "ArrowRight"
+      ) {
 
         stepMemory(1);
 
@@ -1911,29 +2256,39 @@ function setupAuction() {
   const section =
     $("#auction");
 
-  if (!section) return;
+
+  if (!section) {
+    return;
+  }
 
 
-  if (!AUCTION_CONFIG.enabled) {
+  if (
+    !AUCTION_CONFIG.enabled
+  ) {
 
-    section.hidden = true;
+    section.hidden =
+      true;
 
     return;
 
   }
 
 
-  section.hidden = false;
+  section.hidden =
+    false;
 
 
   const title =
     $("#auctionTitle");
 
+
   const description =
     $("#auctionDescription");
 
+
   const startingBid =
     $("#auctionStartingBid");
+
 
   const currentBid =
     $("#auctionCurrentBid");
@@ -1960,7 +2315,9 @@ function setupAuction() {
     startingBid.textContent =
       `₹${Number(
         AUCTION_CONFIG.startingBid
-      ).toLocaleString("en-IN")}`;
+      ).toLocaleString(
+        "en-IN"
+      )}`;
 
   }
 
@@ -1970,7 +2327,9 @@ function setupAuction() {
     currentBid.textContent =
       `₹${Number(
         AUCTION_CONFIG.currentBid
-      ).toLocaleString("en-IN")}`;
+      ).toLocaleString(
+        "en-IN"
+      )}`;
 
   }
 
@@ -1978,56 +2337,79 @@ function setupAuction() {
 
 
 /* =========================================================
-   21. UPI DONATION
+   21. UPI PAYMENT LINK
    ========================================================= */
 
-function upiIntent(amount) {
+function upiIntent(
+  amount
+) {
 
   const params =
     new URLSearchParams({
 
-      pa: DONATION_CONFIG.upiId,
+      pa:
+        DONATION_CONFIG.upiId,
 
-      pn: DONATION_CONFIG.merchantName,
+      pn:
+        DONATION_CONFIG.merchantName,
 
-      am: String(amount),
+      am:
+        String(amount),
 
-      cu: "INR",
+      cu:
+        "INR",
 
-      tn: "Ganesh Utsav 2026 Donation"
+      tn:
+        "Ganesh Utsav 2026 Donation"
 
     });
 
 
-  return `upi://pay?${params.toString()}`;
+  return (
+    `upi://pay?${params.toString()}`
+  );
 
 }
 
 
 /* =========================================================
-   22. AUTOMATIC QR
+   22. AUTOMATIC QR GENERATION
    ========================================================= */
 
-function renderQr(text) {
+function renderQr(
+  text
+) {
 
   const root =
     $("#qrCode");
 
-  if (!root) return;
+
+  if (!root) {
+    return;
+  }
 
 
-  root.innerHTML = "";
+  root.innerHTML =
+    "";
 
+
+  /*
+    No UPI ID yet.
+  */
 
   if (!text) {
 
     root.innerHTML = `
       <div class="qr-empty">
+
         ADD UPI ID
+
         <br>
+
         <small>
           QR will appear automatically
         </small>
+
       </div>
     `;
 
@@ -2037,8 +2419,7 @@ function renderQr(text) {
 
 
   /*
-    QRCode.js is loaded only when
-    donation is enabled.
+    QR library available.
   */
 
   if (window.QRCode) {
@@ -2054,21 +2435,27 @@ function renderQr(text) {
       }
     );
 
-  } else {
 
-    root.innerHTML = `
-      <div class="qr-empty">
-        GENERATING QR…
-      </div>
-    `;
+    return;
 
   }
+
+
+  /*
+    Library still loading.
+  */
+
+  root.innerHTML = `
+    <div class="qr-empty">
+      GENERATING QR…
+    </div>
+  `;
 
 }
 
 
 /* =========================================================
-   23. DONATION SETUP
+   23. DONATION
    ========================================================= */
 
 function setupDonation() {
@@ -2077,23 +2464,30 @@ function setupDonation() {
     $("#donation");
 
 
-  if (!section) return;
+  if (!section) {
+    return;
+  }
 
 
-  if (!DONATION_CONFIG.enabled) {
+  if (
+    !DONATION_CONFIG.enabled
+  ) {
 
-    section.hidden = true;
+    section.hidden =
+      true;
 
     return;
 
   }
 
 
-  section.hidden = false;
+  section.hidden =
+    false;
 
 
   const merchantName =
     $("#merchantName");
+
 
   const upiDisplay =
     $("#upiDisplay");
@@ -2116,18 +2510,25 @@ function setupDonation() {
   }
 
 
-  let amount = 100;
+  let amount =
+    100;
 
 
   const customWrap =
     $("#customAmountWrap");
 
+
   const custom =
     $("#customAmount");
+
 
   const upiButton =
     $("#upiButton");
 
+
+  /*
+    Refresh QR + UPI button.
+  */
 
   const refresh =
     () => {
@@ -2138,49 +2539,60 @@ function setupDonation() {
         );
 
 
-      const selected =
+      const selectedAmount =
         amount === "custom"
           ? customValue
           : Number(amount);
 
 
       const valid =
-        Number.isFinite(selected) &&
-        selected > 0 &&
-        Boolean(DONATION_CONFIG.upiId);
+        Number.isFinite(
+          selectedAmount
+        ) &&
+        selectedAmount > 0 &&
+        Boolean(
+          DONATION_CONFIG.upiId
+        );
 
 
       if (valid) {
 
-        /*
-          This is the important part:
-          Every amount change creates a
-          NEW UPI URL and a NEW QR.
-        */
-
         const link =
-          upiIntent(selected);
+          upiIntent(
+            selectedAmount
+          );
 
 
         if (upiButton) {
 
-          upiButton.href = link;
+          upiButton.href =
+            link;
 
         }
 
 
-        renderQr(link);
+        /*
+          QR automatically changes
+          whenever amount changes.
+        */
+
+        renderQr(
+          link
+        );
 
       } else {
 
         if (upiButton) {
 
-          upiButton.href = "#";
+          upiButton.href =
+            "#";
 
         }
 
 
-        renderQr("");
+        renderQr(
+          ""
+        );
 
       }
 
@@ -2198,20 +2610,28 @@ function setupDonation() {
       event => {
 
         const button =
-          event.target.closest("button");
+          event.target.closest(
+            "button"
+          );
 
 
-        if (!button) return;
+        if (!button) {
+          return;
+        }
 
 
         $$("#amounts button")
           .forEach(
             btn =>
-              btn.classList.remove("active")
+              btn.classList.remove(
+                "active"
+              )
           );
 
 
-        button.classList.add("active");
+        button.classList.add(
+          "active"
+        );
 
 
         amount =
@@ -2256,18 +2676,22 @@ function setupDonation() {
 
 
 /* =========================================================
-   24. LOAD QR LIBRARY ONLY WHEN NEEDED
+   24. LOAD QR LIBRARY
    ========================================================= */
 
 function loadQrLibrary() {
 
-  if (!DONATION_CONFIG.enabled) {
+  if (
+    !DONATION_CONFIG.enabled
+  ) {
+
     return;
+
   }
 
 
   /*
-    If already loaded, don't load again.
+    Don't load it twice.
   */
 
   if (window.QRCode) {
@@ -2280,14 +2704,17 @@ function loadQrLibrary() {
 
 
   const script =
-    document.createElement("script");
+    document.createElement(
+      "script"
+    );
 
 
   script.src =
     "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
 
 
-  script.async = true;
+  script.async =
+    true;
 
 
   script.onload =
@@ -2314,43 +2741,98 @@ function loadQrLibrary() {
 
 
 /* =========================================================
-   25. INITIALIZE EVERYTHING
+   25. INITIALIZE WEBSITE
    ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
+
+    /*
+      Basic website config.
+    */
+
     setupConfig();
+
+
+    /*
+      Schedule.
+    */
 
     renderDaily();
 
     renderUpNext();
 
+
+    /*
+      Memories.
+    */
+
     renderMemories();
 
     setupMemoryFilters();
 
+
+    /*
+      People.
+    */
+
     renderPeople();
+
+
+    /*
+      Events.
+    */
 
     renderEvents();
 
+
+    /*
+      Aagman countdown.
+    */
+
     setupCountdown();
 
-    setupNav();
+
+    /*
+      SIMPLE HEADER ONLY.
+      No hamburger menu.
+    */
+
+    setupHeader();
+
+
+    /*
+      Memory lightbox.
+    */
 
     setupLightbox();
 
+
+    /*
+      Auction.
+    */
+
     setupAuction();
+
+
+    /*
+      Scroll animations.
+    */
 
     observeReveals();
 
+
     /*
-      Donation is intentionally loaded
-      only if enabled.
+      Donation.
+      QR library is loaded only if
+      donation is enabled.
     */
 
-    if (DONATION_CONFIG.enabled) {
+    if (
+      DONATION_CONFIG.enabled
+    ) {
 
       loadQrLibrary();
 
